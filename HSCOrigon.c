@@ -15,21 +15,21 @@ int main()
 {
  
 	 
-	
-	e0 = (1-ETA)*(1-ETA) * (2+ETA);
+  	e0 = (1-ETA)*(1-ETA) * (2+ETA);
 	e1 = -2 * (1-ETA*(6-5*ETA*ETA));
 	e2 = 6*ETA * (2-ETA*(4+7*ETA));
 	e3 = -6*ETA * (2+ETA)*(2+ETA);
 	e4 = e5 = e6 = 24*ETA * (1+2*ETA)*(1+2*ETA);
 	e6 = -e6;
- 
-	 
- double q=PI/1000;
- double haha=chat_ana(q);
- printf("%f\n",haha);
 	
+
+
+	double q=PI/1000;
+	double haha=chat_ana(q);
+	printf("%f\n",haha);
+
 	return (0);
-}
+	}
 
 
 double chat_ana(double q)

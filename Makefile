@@ -1,5 +1,5 @@
 main.o : HSC.c 
-	gcc  HSC.c -lm  -g -lmpfr -lgmp -o main 
+	gcc  HSC.c -lm  -g -ggdb3 -lmpfr -lgmp -o main 
 
 all: main.o
 

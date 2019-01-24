@@ -10,6 +10,8 @@ int de;
 // # define ETA 0.445058959258554   //0.85*pi/6.0
 // # define DPI2 0.050660591821169 // 1/2/pi/pi
 
+# define Precision 1024
+
 double e0, e1, e2, e3, e4, e5, e6;
 void
 chat_ana (mpfr_t q, mpfr_t e0, mpfr_t e1, mpfr_t e2, mpfr_t e3, mpfr_t e4,
@@ -17,7 +19,7 @@ chat_ana (mpfr_t q, mpfr_t e0, mpfr_t e1, mpfr_t e2, mpfr_t e3, mpfr_t e4,
 int
 main ()
 {
-  mpfr_set_default_prec (102400);
+  mpfr_set_default_prec (Precision);
   mpfr_t sum, e0, e1, e2, e3, e4, e5, e6, PI, ETA, QPI, DPI2, C, OneMETA,
       twoPETA, temp, q, result;
   mpfr_init (sum);
@@ -51,9 +53,8 @@ main ()
 		"66666666666666666666666666666666666666666666666666"
 		"6666666666666666666666666666666666666666666666666666666666",
 		10, MPFR_RNDN);
-  //e0
-
-  mpfr_mul_ui (QPI, PI, 4, MPFR_RNDN);
+  //e0 = (1-ETA)*(1-ETA) * (2+ETA);
+  mpfr_mul_ui(QPI, PI, 4, MPFR_RNDN);
   mpfr_mul (ETA, PI, C, MPFR_RNDN);
   mpfr_ui_sub (OneMETA, 1, ETA, MPFR_RNDN);
   mpfr_add_ui (twoPETA, ETA, 2, MPFR_RNDN);
@@ -61,32 +62,32 @@ main ()
   mpfr_mul (e0, temp, twoPETA, MPFR_RNDN);
   //e1 = -2 * (1-ETA*(6-5*ETA*ETA));
   mpfr_mul (temp, ETA, ETA, MPFR_RNDN);
-  mpfr_mul_ui (temp, temp, 5, MPFR_RNDN);
+  mpfr_mul_ui(temp, temp, 5, MPFR_RNDN);
   mpfr_ui_sub (temp, 6, temp, MPFR_RNDN);
   mpfr_mul (temp, ETA, temp, MPFR_RNDN);
   mpfr_ui_sub (temp, 1, temp, MPFR_RNDN);
-  mpfr_mul_si (e1, temp, -2., MPFR_RNDN);
+  mpfr_mul_si(e1, temp, -2., MPFR_RNDN);
   //e2= 6*ETA * (2-ETA*(4+7*ETA));
-  mpfr_mul_ui (temp, ETA, 7, MPFR_RNDN);
+  mpfr_mul_ui(temp, ETA, 7, MPFR_RNDN);
   mpfr_add_ui (temp, temp, 4, MPFR_RNDN);
   mpfr_mul (temp, ETA, temp, MPFR_RNDN);
   mpfr_ui_sub (temp, 2, temp, MPFR_RNDN);
-  mpfr_mul_ui (temp, temp, 6, MPFR_RNDN);
+  mpfr_mul_ui(temp, temp, 6, MPFR_RNDN);
   mpfr_mul (e2, temp, ETA, MPFR_RNDN);
   //e3=-6*ETA * (2+ETA)*(2+ETA);
   mpfr_mul (temp, twoPETA, twoPETA, MPFR_RNDN);
   mpfr_mul (temp, ETA, temp, MPFR_RNDN);
-  mpfr_mul_si (e3, temp, -6, MPFR_RNDN);
+  mpfr_mul_si(e3, temp, -6, MPFR_RNDN);
   //e4=24*ETA * (1+2*ETA)*(1+2*ETA);
-  mpfr_mul_ui (temp, ETA, 2, MPFR_RNDN);
+  mpfr_mul_ui(temp, ETA, 2, MPFR_RNDN);
   mpfr_add_ui (temp, temp, 1, MPFR_RNDN);
   mpfr_mul (temp, temp, temp, MPFR_RNDN);
   mpfr_mul (temp, temp, ETA, MPFR_RNDN);
-  mpfr_mul_ui (e4, temp, 24, MPFR_RNDN);
+  mpfr_mul_ui(e4, temp, 24, MPFR_RNDN);
   //e5
-  mpfr_set (e5, e4, MPFR_RNDN);
+  mpfr_set(e5, e4, MPFR_RNDN);
   //e6
-  mpfr_mul_si (e6, e5, -1, MPFR_RNDN);
+  mpfr_mul_si(e6, e5, -1, MPFR_RNDN);
   // e0 = (1-ETA)*(1-ETA) * (2+ETA);
   // e1 = -2 * (1-ETA*(6-5*ETA*ETA));
   // e2 = 6*ETA * (2-ETA*(4+7*ETA));
@@ -102,13 +103,39 @@ main ()
 //  mpfr_printf ("%10.20RF\n", e5);
 //  mpfr_printf ("%10.20RF\n", e6);
 //  scanf ("%d", &de);
-  //q
-  mpfr_div_ui (q, PI, 1000, MPFR_RNDN);
 
 
-//  mpfr_printf ("%10.200RF\n", PI);
-  chat_ana (q, e0, e1, e2, e3, e4, e5, e6, PI, ETA, result);
+  for (int i = 1; i < 64000; i++)
+    {
+//      printf ("%d\n", i);
+      //q
+      mpfr_div_ui(q, PI, 1000, MPFR_RNDN);
+      chat_ana (q, e0, e1, e2, e3, e4, e5, e6, PI, ETA, result);
+    }
+
+//  double mpf_get_d (const mpf_t op)
+
   mpfr_printf ("%10.200RF\n", result);
+
+  mpfr_clear (sum);
+  mpfr_clear (e0);
+  mpfr_clear (e1);
+  mpfr_clear (e2);
+  mpfr_clear (e3);
+  mpfr_clear (e4);
+  mpfr_clear (e5);
+  mpfr_clear (e6);
+  mpfr_clear (PI);
+  mpfr_clear (ETA);
+  mpfr_clear (QPI);
+  mpfr_clear (DPI2);
+  mpfr_clear (C);
+  mpfr_clear (OneMETA);
+  mpfr_clear (twoPETA);
+  mpfr_clear (temp);
+  mpfr_clear (q);
+  mpfr_clear (result);
+
   return (0);
 }
 
@@ -117,7 +144,7 @@ chat_ana (mpfr_t q, mpfr_t e0, mpfr_t e1, mpfr_t e2, mpfr_t e3, mpfr_t e4,
 	  mpfr_t e5, mpfr_t e6, mpfr_t PI, mpfr_t ETA, mpfr_t result)
 {
   int i, j, minIndex;
-  mpfr_set_default_prec (1024);
+  mpfr_set_default_prec (Precision);
   mpfr_t q2, q3, sinq, cosq, sum, temp, t0, t1, t2, t3, t4, t5, t6, oneMETA,
       upper;
   mpfr_init (q2);
@@ -157,7 +184,7 @@ chat_ana (mpfr_t q, mpfr_t e0, mpfr_t e1, mpfr_t e2, mpfr_t e3, mpfr_t e4,
   mpfr_mul (t4, temp, sinq, MPFR_RNDN);
   //t5
   mpfr_mul (t5, e5, cosq, MPFR_RNDN);
-  mpfr_set (t6, e6, MPFR_RNDN);
+  mpfr_set(t6, e6, MPFR_RNDN);
   // q2=q*q;  q3=q*q2;  sinq=sin(q);  cosq=cos(q);
   // t[0] = e0 * q2 *q2* cosq;
   // t[1] = e1 * q3 * sinq;
@@ -167,10 +194,7 @@ chat_ana (mpfr_t q, mpfr_t e0, mpfr_t e1, mpfr_t e2, mpfr_t e3, mpfr_t e4,
   // t[5] = e5 * cosq;
   // t[6] = e6;
 
-
-
-
-  mpfr_set_si (sum, 0, MPFR_RNDN);
+  mpfr_set_si(sum, 0, MPFR_RNDN);
   mpfr_add (sum, sum, t0, MPFR_RNDN);
   mpfr_add (sum, sum, t1, MPFR_RNDN);
   mpfr_add (sum, sum, t2, MPFR_RNDN);
@@ -179,16 +203,16 @@ chat_ana (mpfr_t q, mpfr_t e0, mpfr_t e1, mpfr_t e2, mpfr_t e3, mpfr_t e4,
   mpfr_add (sum, sum, t5, MPFR_RNDN);
   mpfr_add (sum, sum, t6, MPFR_RNDN);
 
-  printf("debug\n");
-  mpfr_printf ("%10.200RF\n", q);
-  mpfr_printf ("%10.200RF\n", t0);
-  mpfr_printf ("%10.200RF\n", t1);
-  mpfr_printf ("%10.200RF\n", t2);
-  mpfr_printf ("%10.200RF\n", t3);
-  mpfr_printf ("%10.200RF\n", t4);
-  mpfr_printf ("%10.200RF\n", t5);
-  mpfr_printf ("%10.200RF\n", t6);
-  mpfr_printf ("%10.200RF\n", sum);
+//  printf ("debug\n");
+//  mpfr_printf ("%10.200RF\n", q);
+//  mpfr_printf ("%10.200RF\n", t0);
+//  mpfr_printf ("%10.200RF\n", t1);
+//  mpfr_printf ("%10.200RF\n", t2);
+//  mpfr_printf ("%10.200RF\n", t3);
+//  mpfr_printf ("%10.200RF\n", t4);
+//  mpfr_printf ("%10.200RF\n", t5);
+//  mpfr_printf ("%10.200RF\n", t6);
+//  mpfr_printf ("%10.200RF\n", sum);
 //  scanf ("%d", &de);
 
   // return (2*PI*sum / pow((1-ETA)*(1-ETA)*q3,2));
@@ -197,10 +221,8 @@ chat_ana (mpfr_t q, mpfr_t e0, mpfr_t e1, mpfr_t e2, mpfr_t e3, mpfr_t e4,
   mpfr_mul (temp, temp, q3, MPFR_RNDN);
   mpfr_mul (temp, temp, temp, MPFR_RNDN);
   mpfr_mul (upper, PI, sum, MPFR_RNDN);
-  mpfr_mul_ui (upper, upper, 2, MPFR_RNDN);
+  mpfr_mul_ui(upper, upper, 2, MPFR_RNDN);
   mpfr_div (result, upper, temp, MPFR_RNDN);
-
-
 
   mpfr_clear (q2);
   mpfr_clear (q3);
